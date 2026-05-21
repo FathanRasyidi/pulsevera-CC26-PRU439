@@ -127,7 +127,7 @@ python inference.py
 - [ ] SHAP untuk interpretabilitas prediksi
 - [ ] tf.gradient custom loop
 - [ ] Generative AI fitur sekunder (on going)
-- [ ] Tensorboard (masih coba-coba)
+- [x] Tensorboard
 
 ### Full-Stack 🔄 In Progress
 - [ ] Setup GitHub repo & mockup UI/UX (Figma)
