@@ -129,7 +129,7 @@ python inference.py
 - [x] Data Dictionary (`data_dictionary.md`)
 - [ ] Laporan Teknis PDF
 
-### AI Engineer 🔶 Sebagian
+### AI Engineer ✅ Sebagian side-quest
 - [x] Training 3 model ML baseline — LR, DT, RF + SMOTE (`05_ml_baseline.ipynb`)
 - [x] Threshold tuning — Recall ≥ 70%, Accuracy ≥ 85%
 - [x] Deep Learning — TensorFlow Functional API + Focal Loss (`06_deep_learning.ipynb`)
