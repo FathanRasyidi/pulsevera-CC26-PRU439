@@ -91,9 +91,23 @@ jupyter notebook notebooks/
 ```bash
 cd ml-api
 pip install -r requirements.txt
+cp .env.example .env
 uvicorn main:app --reload
 ```
 Buka `http://localhost:8000/docs` untuk dokumentasi interaktif.
+
+#### Setup Gemini API untuk rekomendasi
+Rekomendasi pada response `/api/v1/predict` dibuat oleh Gemini berdasarkan profil input pengguna dan faktor risiko prioritas. Prediksi `risk_score` dan `risk_label` tetap berasal dari model deep learning.
+
+Isi `ml-api/.env`:
+```env
+GEMINI_API_KEY=PASTE_YOUR_GEMINI_API_KEY_HERE
+GEMINI_MODEL=gemini-2.5-flash
+GEMINI_FALLBACK_MODELS=gemini-2.0-flash
+GEMINI_ENABLED=true
+```
+
+Ganti `PASTE_YOUR_GEMINI_API_KEY_HERE` dengan API key Gemini. Jika model utama sedang penuh/error, API mencoba `GEMINI_FALLBACK_MODELS`. Jika API key belum diisi, package belum terpasang, atau semua request Gemini gagal, API otomatis memakai fallback rekomendasi rule-based agar endpoint tetap berjalan.
 
 ### Inference Langsung (CLI)
 ```bash
@@ -123,10 +137,10 @@ python inference.py
 - [x] Model disimpan format produksi (`.keras`, `.pkl`)
 - [x] Inference module (`ml-api/inference.py`)
 - [x] FastAPI endpoint `/api/v1/predict` aktif (`ml-api/main.py`)
+- [x] Generative AI recommendation via Gemini API (`ml-api/main.py`)
 ##### Side-quest ---------------
 - [ ] SHAP untuk interpretabilitas prediksi
 - [ ] tf.gradient custom loop
-- [ ] Generative AI fitur sekunder (on going)
 - [x] Tensorboard
 
 ### Full-Stack 🔄 In Progress
@@ -165,16 +179,26 @@ python inference.py
   "risk_label": "Tinggi",
   "top_risk_factors": ["IsActiveSmoker", "IsObese", "AgeCategory"],
   "recommendations": [
-    "Berhenti merokok — konsultasikan program berhenti merokok ke dokter.",
-    "Turunkan berat badan dengan diet seimbang dan olahraga rutin.",
-    "Lakukan pemeriksaan jantung rutin setiap tahun."
-  ]
+    "Diskusikan program berhenti merokok dengan tenaga kesehatan agar rencana lebih terarah dan aman.",
+    "Mulai aktivitas fisik ringan 20-30 menit, 3-5 kali per minggu sesuai kemampuan.",
+    "Atur porsi makan seimbang dan pantau berat badan secara bertahap setiap minggu."
+  ],
+  "recommendation_source": "gemini"
 }
 ```
 
+Catatan: `recommendations` dihasilkan Gemini jika `GEMINI_API_KEY` aktif. Jika tidak, FastAPI memakai fallback rule-based dan `recommendation_source` bernilai `"rule_based"`.
+
 ### GET `/health`
 ```json
-{"status": "ok", "model_loaded": true}
+{
+  "status": "ok",
+  "model_loaded": true,
+  "gemini_recommendations": true,
+  "gemini_model": "gemini-2.5-flash",
+  "gemini_model_candidates": ["gemini-2.5-flash", "gemini-2.0-flash"],
+  "gemini_inactive_reason": null
+}
 ```
 
 ---
